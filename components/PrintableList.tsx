@@ -1,11 +1,17 @@
 'use client'
 
 import { Printer, Download } from 'lucide-react'
-import { GAPS_PHASES, FOOD_CATEGORIES } from '@/lib/gaps-data'
+import { GAPS_PHASES, FOOD_CATEGORIES, type GapsFood } from '@/lib/gaps-data'
+
+interface ShoppingItem extends GapsFood {
+  id?: string
+  checked?: boolean
+  customQuantity?: string
+}
 
 interface PrintableListProps {
   phase: number
-  items: any[]
+  items: ShoppingItem[]
 }
 
 export default function PrintableList({ phase, items }: PrintableListProps) {
@@ -27,14 +33,14 @@ export default function PrintableList({ phase, items }: PrintableListProps) {
       }
       groups[category].push(item)
       return groups
-    }, {} as Record<string, any[]>)
+    }, {} as Record<string, ShoppingItem[]>)
 
     FOOD_CATEGORIES.forEach(category => {
       const categoryItems = groupedItems[category] || []
       if (categoryItems.length > 0) {
         exportText += `${category.toUpperCase()}:\n`
-        categoryItems.forEach(item => {
-          exportText += `□ ${item.name} - ${item.quantity}`
+        categoryItems.forEach((item: ShoppingItem) => {
+          exportText += `□ ${item.name} - ${item.customQuantity || item.quantity}`
           if (item.notes) {
             exportText += ` (${item.notes})`
           }
